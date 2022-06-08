@@ -61,6 +61,8 @@ public class ClientServiceImpl implements ClientService {
 
         LocalDateTime expirationDateTime = LocalDateTime.parse(configuration.getValue(), formatter);
         if (expirationDateTime.isBefore(LocalDateTime.now())) throw new JuryException("Token is expired");
+        //checking that token is related to existing jury
+        juryService.getJuryIfExists(configuration.getEntityId());
         return configuration;
     }
 
