@@ -24,7 +24,6 @@ import java.util.Optional;
 
 @Service
 public class ContestServiceImpl implements ContestService {
-    private static String ACTIVE_PERFORMANCE_KEY = "ACTIVE_PERFORMANCE_KEY";
 
     @Autowired
     ContestRepo repo;
@@ -68,7 +67,7 @@ public class ContestServiceImpl implements ContestService {
     @Override
     public List<Contest> getAll() {
         repo.findAll().forEach(contest -> {
-            Configuration config = configurationService.getValue(ACTIVE_PERFORMANCE_KEY, String.valueOf(contest.getId()));
+            Configuration config = configurationService.getConfiguration(ACTIVE_PERFORMANCE_KEY, String.valueOf(contest.getId()));
             fillInTransientFields(contest);
             if (config != null)
                 contest.setActivePerformance(performanceService.getPerformanceIfExists(Long.valueOf(config.getValue())));
@@ -80,23 +79,29 @@ public class ContestServiceImpl implements ContestService {
     public List<Performance> getAllPerformancesForContest(Long contestId) {
         List<Performance> result = performanceService.getByContest(getContestIfExists(contestId));
         result.sort(Performance.COMPARE_BY_TURN_NUMBER);
-        result.forEach(performance -> {
-            performance.setFullName(performance.getMember().getLastName() + " " +
-                    performance.getMember().getFirstName() + " " + performance.getMember().getSecondName());
-            performance.setPlace(performance.getMember().getDescription());
-            performance.getMarks().forEach(mark -> {
-                mark.setCriteriaName(mark.getCriteria().getName());
-                mark.setJuryLastName(mark.getJury().getLastName());
-            });
-        });
+        fillInTransientFields(result);
         return result;
+    }
+
+    private void fillInTransientFields(List<Performance> performances) {
+        performances.forEach(this::fillInTransientFields);
+    }
+
+    public void fillInTransientFields(Performance performance) {
+        performance.setFullName(performance.getMember().getLastName() + " " +
+                performance.getMember().getFirstName() + " " + performance.getMember().getSecondName());
+        performance.setPlace(performance.getMember().getDescription());
+        performance.getMarks().forEach(mark -> {
+            mark.setCriteriaName(mark.getCriteria().getName());
+            mark.setJuryLastName(mark.getJury().getLastName());
+        });
     }
 
     @Override
     public Contest setActivePerformanceForContest(Long contestId, Performance performance) {
         Contest contest = getContestIfExists(contestId);
         fillInTransientFields(contest);
-        Configuration config = configurationService.getValue(ACTIVE_PERFORMANCE_KEY, String.valueOf(contest.getId()));
+        Configuration config = configurationService.getConfiguration(ACTIVE_PERFORMANCE_KEY, String.valueOf(contest.getId()));
         if (config != null && performance == null) {
             configurationService.delete(config);
             return contest;
@@ -108,6 +113,7 @@ public class ContestServiceImpl implements ContestService {
         config.setKey(ACTIVE_PERFORMANCE_KEY);
         config.setParameter(String.valueOf(contestId));
         config.setValue(String.valueOf(performance.getId()));
+        config.setEntityId(performance.getId());
         configurationService.save(config);
         contest.setActivePerformance(performance);
         return contest;

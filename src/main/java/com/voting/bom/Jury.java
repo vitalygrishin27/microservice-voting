@@ -53,4 +53,7 @@ public class Jury {
 
     @Transient
     private MultipartFile file;
+
+    @Transient
+    private String token;
 }

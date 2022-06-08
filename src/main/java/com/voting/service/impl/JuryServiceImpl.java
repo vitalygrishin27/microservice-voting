@@ -59,7 +59,13 @@ public class JuryServiceImpl implements JuryService {
         return repo.findAll();
     }
 
-    private Jury getJuryIfExists(Long juryId) {
+    @Override
+    public Jury findByLogin(String login) {
+        return repo.findByLogin(login);
+    }
+
+    @Override
+    public Jury getJuryIfExists(Long juryId) {
         Optional<Jury> optionalJury = repo.findById(juryId);
         if (optionalJury.isEmpty()) {
             throw new JuryException(String.format("Jury with id=%s not found", juryId));
@@ -82,7 +88,7 @@ public class JuryServiceImpl implements JuryService {
         return Base64.getEncoder().encodeToString(password.getBytes());
     }
 
-    public static Boolean isPasswordMatch(String password, String encryptedPassword) {
+    public boolean isPasswordMatch(String password, String encryptedPassword) {
         return new String(Base64.getDecoder().decode(encryptedPassword)).equals(password);
     }
 }

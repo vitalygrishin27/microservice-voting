@@ -28,4 +28,7 @@ public class Configuration {
     @Column
     private String value;
 
+    @Column(nullable = false, name = "entity_id")
+    private Long entityId;
+
 }

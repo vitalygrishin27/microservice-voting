@@ -12,7 +12,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     ConfigurationRepo repo;
 
     @Override
-    public Configuration getValue(String key, String parameter) {
+    public Configuration getConfiguration(String key, String parameter) {
         return repo.findByKeyAndParameter(key, parameter);
     }
 
