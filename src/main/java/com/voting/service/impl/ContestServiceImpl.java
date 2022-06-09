@@ -1,8 +1,6 @@
 package com.voting.service.impl;
 
-import com.voting.bom.Configuration;
-import com.voting.bom.Contest;
-import com.voting.bom.Performance;
+import com.voting.bom.*;
 import com.voting.exception.CategoryException;
 import com.voting.exception.ContestException;
 import com.voting.repository.ContestRepo;
@@ -17,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ContestServiceImpl implements ContestService {
@@ -91,10 +86,24 @@ public class ContestServiceImpl implements ContestService {
         performance.setFullName(performance.getMember().getLastName() + " " +
                 performance.getMember().getFirstName() + " " + performance.getMember().getSecondName());
         performance.setPlace(performance.getMember().getDescription());
+
+        HashMap<Jury, Integer> summaryMarksMap = new HashMap<>();
+        performance.getContest().getJuries().forEach(jury -> summaryMarksMap.put(jury, 0));
+
         performance.getMarks().forEach(mark -> {
             mark.setCriteriaName(mark.getCriteria().getName());
             mark.setJuryLastName(mark.getJury().getLastName());
+            mark.setCriteriaId(mark.getCriteria().getId());
+            summaryMarksMap.put(mark.getJury(), summaryMarksMap.get(mark.getJury()) + mark.getValue());
         });
+        List<Mark> summaryMarks = new ArrayList<>();
+        summaryMarksMap.forEach((key, value) -> {
+            Mark mark = new Mark();
+            mark.setJuryLastName(key.getLastName());
+            mark.setValue(value);
+            summaryMarks.add(mark);
+        });
+        performance.setSummaryMarks(summaryMarks);
     }
 
     @Override

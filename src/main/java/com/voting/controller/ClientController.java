@@ -30,9 +30,16 @@ public class ClientController {
         return new ResponseEntity<>(clientService.getAvailableContests(jury.getToken()), HttpStatus.OK);
     }
 
-    @GetMapping("/contest/{contestId}/performance/{id}")
-    public ResponseEntity<Performance> getActivePerformanceForContest(@NonNull @PathVariable Long contestId, @PathVariable Long id) {
-        return new ResponseEntity<>(clientService.getActivePerformanceIfChanged(contestId, id), HttpStatus.OK);
+    @PostMapping("/marks")
+    public ResponseEntity<Performance> createMarks(@NonNull @RequestBody Performance performance) {
+        return new ResponseEntity<>(clientService.createMarks(performance), HttpStatus.OK);
+    }
+
+    @GetMapping("/contest/{contestId}/performance/{id}/{token}")
+    public ResponseEntity<Performance> getActivePerformanceForContest(@NonNull @PathVariable Long contestId,
+                                                                      @PathVariable Long id,
+                                                                      @PathVariable String token) {
+        return new ResponseEntity<>(clientService.getActivePerformanceIfChanged(contestId, id, token), HttpStatus.OK);
     }
 
 }

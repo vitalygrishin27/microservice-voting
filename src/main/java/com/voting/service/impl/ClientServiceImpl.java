@@ -1,9 +1,6 @@
 package com.voting.service.impl;
 
-import com.voting.bom.Configuration;
-import com.voting.bom.Contest;
-import com.voting.bom.Jury;
-import com.voting.bom.Performance;
+import com.voting.bom.*;
 import com.voting.exception.JuryException;
 import com.voting.exception.PerformanceException;
 import com.voting.service.*;
@@ -15,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -31,6 +29,12 @@ public class ClientServiceImpl implements ClientService {
 
     @Autowired
     PerformanceService performanceService;
+
+    @Autowired
+    CriteriaService criteriaService;
+
+    @Autowired
+    MarkService markService;
 
     @Autowired
     ConfigurationService configurationService;
@@ -67,12 +71,21 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Performance getActivePerformanceIfChanged(Long contestId, Long previousPerformanceId) {
+    public Performance getActivePerformanceIfChanged(Long contestId, Long previousPerformanceId, String token) {
         Configuration config = configurationService.getConfiguration(contestService.ACTIVE_PERFORMANCE_KEY, String.valueOf(contestId));
         if (config == null) {
             throw new PerformanceException("No new performance!");
         }
+        //If active performance already in UI skip request
+        if (Long.valueOf(config.getValue()).equals(previousPerformanceId)) return null;
+        Jury jury = juryService.getJuryIfExists(checkToken(token).getEntityId());
+
         Performance performance = performanceService.getPerformanceIfExists(Long.valueOf(config.getValue()));
+        //If all marks already exists Performance should not return to Jury
+        if (performance.getCategory().getCriteria().size() == performance.getMarks().stream().filter(mark -> Objects.equals(mark.getJury().getId(), jury.getId())).count()) {
+            throw new PerformanceException("All marks for this PerformanceId=" + performance.getId() + " already exists.");
+        }
+
         contestService.fillInTransientFields(performance);
         return performance;
     }
@@ -81,6 +94,25 @@ public class ClientServiceImpl implements ClientService {
     public List<Contest> getAvailableContests(String token) {
         Configuration configuration = checkToken(token);
         return juryService.getJuryIfExists(configuration.getEntityId()).getContests();
+    }
+
+    @Override
+    public Performance createMarks(Performance performance) {
+        Configuration configuration = checkToken(performance.getToken());
+        if (performance.getMarks().isEmpty()) throw new PerformanceException("No marks in request");
+        if (performance.getCategory().getCriteria().size() != performance.getMarks().size())
+            throw new PerformanceException("Not all marks received.");
+        Jury jury = juryService.getJuryIfExists(configuration.getEntityId());
+        markService.deleteAllByPerformanceAndJury(performance, jury);
+        performance.getMarks().forEach(item -> {
+            Mark mark = new Mark();
+            mark.setCriteria(criteriaService.findById(item.getCriteriaId()));
+            mark.setJury(jury);
+            mark.setValue(item.getValue());
+            mark.setPerformance(performanceService.getPerformanceIfExists(performance.getId()));
+            markService.create(mark);
+        });
+        return performanceService.getPerformanceIfExists(performance.getId());
     }
 
     private static String generateNewToken() {

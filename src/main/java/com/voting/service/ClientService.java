@@ -9,7 +9,9 @@ import java.util.List;
 public interface ClientService {
     String loginIn(Jury jury);
 
-    Performance getActivePerformanceIfChanged(Long contestId, Long previousPerformanceId);
+    Performance getActivePerformanceIfChanged(Long contestId, Long previousPerformanceId, String token);
 
     List<Contest> getAvailableContests(String token);
+
+    Performance createMarks(Performance performance);
 }

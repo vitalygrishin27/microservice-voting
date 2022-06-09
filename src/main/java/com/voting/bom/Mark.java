@@ -40,6 +40,9 @@ public class Mark {
     @Transient
     private String juryLastName;
 
+    @Transient
+    private Long criteriaId;
+
     @Override
     public String toString() {
         return "Mark{" +

@@ -95,7 +95,7 @@ public class MemberServiceImpl implements MemberService {
                 if (member.getId() != null) performanceService.create(item);
             }
             member.setPerformances(performancesFromRequest);
-        } else {
+        } else if (member.getId() != null) {
             performanceService.deleteAllByMember(member);
         }
     }

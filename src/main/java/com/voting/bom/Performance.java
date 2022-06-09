@@ -54,6 +54,12 @@ public class Performance {
     @Transient
     Long categoryId;
 
+    @Transient
+    private String token;
+
+    @Transient
+    private List<Mark> summaryMarks;
+
     @OneToMany(mappedBy = "performance", fetch = FetchType.LAZY)
     private List<Mark> marks;
 

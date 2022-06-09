@@ -56,6 +56,13 @@ public class CriteriaServiceImpl implements CriteriaService {
         return repo.findAll();
     }
 
+    @Override
+    public Criteria findById(Long id) {
+        Optional<Criteria> optionalCriteria = repo.findById(id);
+        if (optionalCriteria.isEmpty()) throw new CriteriaException("Criteria with id=" + id + " not exists");
+        return optionalCriteria.get();
+    }
+
     private Criteria getCriteriaIfExists(Long criteriaId) {
         Optional<Criteria> optionalCriteria = repo.findById(criteriaId);
         if (optionalCriteria.isEmpty()) {

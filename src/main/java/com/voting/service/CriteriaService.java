@@ -12,4 +12,6 @@ public interface CriteriaService {
     Long update(Criteria criteria);
 
     List<Criteria> getAll();
+
+    Criteria findById(Long id);
 }
