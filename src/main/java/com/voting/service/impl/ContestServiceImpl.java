@@ -16,6 +16,7 @@ import org.springframework.util.Base64Utils;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class ContestServiceImpl implements ContestService {
@@ -64,8 +65,12 @@ public class ContestServiceImpl implements ContestService {
         repo.findAll().forEach(contest -> {
             Configuration config = configurationService.getConfiguration(ACTIVE_PERFORMANCE_KEY, String.valueOf(contest.getId()));
             fillInTransientFields(contest);
-            if (config != null)
-                contest.setActivePerformance(performanceService.getPerformanceIfExists(Long.valueOf(config.getValue())));
+            if (config != null) {
+                Performance performance = performanceService.getPerformanceIfExists(Long.valueOf(config.getValue()));
+                fillInTransientFields(performance);
+                contest.setActivePerformance(performance);
+            }
+
         });
         return repo.findAll();
     }
@@ -104,6 +109,26 @@ public class ContestServiceImpl implements ContestService {
             summaryMarks.add(mark);
         });
         performance.setSummaryMarks(summaryMarks);
+    }
+
+    @Override
+    public Performance getUpdatedPerformanceData(Long contestId, Performance performanceFromUI) {
+        Performance performanceFromDB = performanceService.getPerformanceIfExists(performanceFromUI.getId());
+        fillInTransientFields(performanceFromDB);
+        if (performanceFromUI.getSummaryMarks() == null) return performanceFromDB;
+        HashMap<String, Integer> marksFromDB = new HashMap<>();
+        performanceFromDB.getSummaryMarks().forEach(mark -> marksFromDB.put(mark.getJuryLastName(), mark.getValue()));
+
+        HashMap<String, Integer> marksFromUI = new HashMap<>();
+        performanceFromUI.getSummaryMarks().forEach(mark -> marksFromUI.put(mark.getJuryLastName(), mark.getValue()));
+
+        AtomicBoolean needToUpdateUI = new AtomicBoolean(false);
+        marksFromDB.forEach((key, value) -> {
+            if (!marksFromUI.get(key).equals(value)) needToUpdateUI.set(true);
+
+        });
+
+        return needToUpdateUI.get() ? performanceFromDB : null;
     }
 
     @Override

@@ -22,4 +22,6 @@ public interface ContestService {
     Contest setActivePerformanceForContest(Long contestId, Performance performance);
 
     void fillInTransientFields(Performance performance);
+
+    Performance getUpdatedPerformanceData(Long contestId, Performance performance);
 }

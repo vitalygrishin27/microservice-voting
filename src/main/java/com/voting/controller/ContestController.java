@@ -40,6 +40,11 @@ public class ContestController {
         return new ResponseEntity<>(service.setActivePerformanceForContest(contestId, performance), HttpStatus.OK);
     }
 
+    @PostMapping("/{contestId}/getUpdatedPerformanceData")
+    public ResponseEntity<Performance> getUpdatedPerformanceData(@PathVariable Long contestId, @Nullable @RequestBody Performance performance) {
+        return new ResponseEntity<>(service.getUpdatedPerformanceData(contestId, performance), HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<List<Contest>> getAll() {
 
