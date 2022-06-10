@@ -120,6 +120,7 @@
                 <version>2.3.0</version>
                 <configuration>
                     <projectId>voting-352911</projectId>
+                    <version>voting</version>
                 </configuration>
             </plugin>
         </plugins>
