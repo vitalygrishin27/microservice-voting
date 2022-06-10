@@ -1,12 +1,3 @@
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://derff.mysql.tools/derff_voting?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: derff_voting
-    password: 6Ru4e5%J%i
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    database-platform: org.hibernate.dialect.MySQL5Dialect
-maxUploadFileSizePlayerPhoto: 2000000
+  profiles:
+    active: local

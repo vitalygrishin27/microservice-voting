@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # url: jdbc:mysql://35.222.39.223/voting?useSSL=false
+    username: root
+    password:
+  cloud:
+    gcp:
+      credentials:
+        location: file:c:/voting-352911-631827f5bf2e.json
+      sql:
+        database-name: voting8
+        instance-connection-name: voting-352911:us-central1:vint
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+maxUploadFileSizePlayerPhoto: 2000000
