@@ -3,6 +3,7 @@ package com.voting.service.impl;
 import com.voting.bom.*;
 import com.voting.exception.CategoryException;
 import com.voting.exception.ContestException;
+import com.voting.exception.PerformanceException;
 import com.voting.repository.ContestRepo;
 import com.voting.service.ConfigurationService;
 import com.voting.service.ContestService;
@@ -66,9 +67,17 @@ public class ContestServiceImpl implements ContestService {
             Configuration config = configurationService.getConfiguration(ACTIVE_PERFORMANCE_KEY, String.valueOf(contest.getId()));
             fillInTransientFields(contest);
             if (config != null) {
-                Performance performance = performanceService.getPerformanceIfExists(Long.valueOf(config.getValue()));
-                fillInTransientFields(performance);
-                contest.setActivePerformance(performance);
+                Performance performance = null;
+                try {
+                    performance = performanceService.getPerformanceIfExists(Long.valueOf(config.getValue()));
+                } catch (PerformanceException e) {
+                    //Remove active performance from configuration because Performance not exists
+                    configurationService.delete(config);
+                }
+                if (performance != null) {
+                    fillInTransientFields(performance);
+                    contest.setActivePerformance(performance);
+                }
             }
 
         });
@@ -99,7 +108,7 @@ public class ContestServiceImpl implements ContestService {
             mark.setCriteriaName(mark.getCriteria().getName());
             mark.setJuryLastName(mark.getJury().getLastName());
             mark.setCriteriaId(mark.getCriteria().getId());
-            summaryMarksMap.put(mark.getJury(), summaryMarksMap.get(mark.getJury()) + mark.getValue());
+            summaryMarksMap.put(mark.getJury(), summaryMarksMap.getOrDefault(mark.getJury(), 0) + mark.getValue());
         });
         List<Mark> summaryMarks = new ArrayList<>();
         summaryMarksMap.forEach((key, value) -> {

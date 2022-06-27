@@ -1,8 +1,0 @@
-runtime: java11
-# entrypoint: 'java -noverify -jar microservice-voting.war'
-
-env_variables:
-  CLOUD_SQL_CONNECTION_NAME: "voting-352911:us-central1:vint"
-  DB_NAME: "voting8"
-  DB_USER: "root"
-  DB_PASS:
