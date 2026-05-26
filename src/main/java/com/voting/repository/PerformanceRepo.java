@@ -3,11 +3,11 @@ package com.voting.repository;
 import com.voting.bom.Contest;
 import com.voting.bom.Member;
 import com.voting.bom.Performance;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 public interface PerformanceRepo extends JpaRepository<Performance, Long> {

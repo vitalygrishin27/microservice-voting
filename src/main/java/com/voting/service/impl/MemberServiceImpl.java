@@ -16,10 +16,10 @@ import com.voting.service.PerformanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,7 +75,7 @@ public class MemberServiceImpl implements MemberService {
         if (member.getFile() != null && member.getFile().getSize() > maxUploadFileSizePlayerPhoto)
             throw new MemberException("File size is too large. Allowed to " + maxUploadFileSizePlayerPhoto);
         if (member.getFile() != null)
-            member.setPhoto("data:image/jpeg;base64, " + Base64Utils.encodeToString(member.getFile().getBytes()));
+            member.setPhoto("data:image/jpeg;base64, " + Base64.getEncoder().encodeToString(member.getFile().getBytes()));
 
         if (performancesData != null) {
             List<Performance> performancesFromRequest = Arrays.asList(new ObjectMapper().readValue((String) performancesData, Performance[].class));

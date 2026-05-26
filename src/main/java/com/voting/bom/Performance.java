@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.Collection;
+import jakarta.persistence.*;
 import java.util.Comparator;
 import java.util.List;
 

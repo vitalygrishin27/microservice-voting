@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @AllArgsConstructor
@@ -40,6 +40,7 @@ public class Member {
     private Contest contest;
 
     @Lob
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String photo = "";
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

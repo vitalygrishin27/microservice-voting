@@ -10,10 +10,7 @@ import com.voting.service.ContestService;
 import com.voting.service.PerformanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 
 import java.io.IOException;
 import java.util.*;
@@ -174,9 +171,10 @@ public class ContestServiceImpl implements ContestService {
         if (contest.getName() == null ||
                 contest.getName().equals("")) throw new ContestException("Name can`t be empty");
 
-        ExampleMatcher caseInsensitiveExampleMatcher = ExampleMatcher.matchingAll().withIgnoreCase().withIgnoreNullValues();
-        Example<Contest> example = Example.of(new Contest(contest.getName()), caseInsensitiveExampleMatcher);
-        Optional<Contest> actualOpt = repo.findOne(example);
+      //  ExampleMatcher caseInsensitiveExampleMatcher = ExampleMatcher.matchingAll().withIgnoreCase().withIgnoreNullValues();
+      //  Example<Contest> example = Example.of(new Contest(contest.getName()), caseInsensitiveExampleMatcher);
+        //Optional<Contest> actualOpt = repo.findOne(example);
+        Optional<Contest> actualOpt = repo.findByName(contest.getName());
         if (actualOpt.isPresent() && !Objects.equals(actualOpt.get().getId(), contest.getId())) {
             throw new ContestException(String.format("Contest with name=%s already exist", contest.getName()));
         }
@@ -184,7 +182,7 @@ public class ContestServiceImpl implements ContestService {
         if (contest.getFile() != null && contest.getFile().getSize() > maxUploadFileSizePhoto)
             throw new ContestException("File size is too large. Allowed to " + maxUploadFileSizePhoto);
         if (contest.getFile() != null)
-            contest.setPhoto("data:image/jpeg;base64, " + Base64Utils.encodeToString(contest.getFile().getBytes()));
+            contest.setPhoto("data:image/jpeg;base64, " + Base64.getEncoder().encodeToString(contest.getFile().getBytes()));
     }
 
     private void fillInTransientFields(Contest contest) {

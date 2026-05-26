@@ -4,10 +4,11 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
+
   jpa:
-    show-sql: true
-    #open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+
+  flyway:
+    enabled: false
 maxUploadFileSizePlayerPhoto: 2000000
-#ssh -L 3306:localhost:3306 root@173.242.57.145

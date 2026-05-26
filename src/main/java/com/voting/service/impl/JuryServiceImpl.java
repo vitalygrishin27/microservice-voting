@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -81,7 +80,7 @@ public class JuryServiceImpl implements JuryService {
         if (jury.getFile() != null && jury.getFile().getSize() > maxUploadFileSizePlayerPhoto)
             throw new JuryException("File size is too large. Allowed to " + maxUploadFileSizePlayerPhoto);
         if (jury.getFile() != null)
-            jury.setPhoto("data:image/jpeg;base64, " + Base64Utils.encodeToString(jury.getFile().getBytes()));
+            jury.setPhoto("data:image/jpeg;base64, " + Base64.getEncoder().encodeToString(jury.getFile().getBytes()));
     }
 
     public static String encryptPassword(String password) {

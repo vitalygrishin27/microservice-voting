@@ -8,7 +8,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @AllArgsConstructor
@@ -46,6 +46,7 @@ public class Contest {
     private List<Category> categories;
 
     @Lob
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String photo = "";
 
     @Transient
