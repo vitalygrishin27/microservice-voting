@@ -108,6 +108,7 @@ public class ContestServiceImpl implements ContestService {
             summaryMarksMap.put(mark.getJury(), summaryMarksMap.getOrDefault(mark.getJury(), 0) + mark.getValue());
         });
         List<Mark> summaryMarks = new ArrayList<>();
+        performance.setMemberPhoto(performance.getMember().getPhoto());
         summaryMarksMap.forEach((key, value) -> {
             Mark mark = new Mark();
             mark.setJuryLastName(key.getLastName());

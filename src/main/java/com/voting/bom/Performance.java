@@ -54,6 +54,10 @@ public class Performance {
     Long categoryId;
 
     @Transient
+    @Lob
+    String memberPhoto;
+
+    @Transient
     private String token;
 
     @Transient
